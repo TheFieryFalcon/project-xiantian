@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ProjectXiantian.twee" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ProjectXiantian.twee">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BidirectionalMap" Version="2.0.0" />
+    <PackageReference Include="Videlais.libtwee" Version="1.0.2" />
+  </ItemGroup>
+
+</Project>
