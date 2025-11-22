@@ -15,12 +15,13 @@ ProjectXiantian
 :: START-0-00 {"position":"700,350","size":"100,100"}
 You wake up in a dark, damp corner. Something rustles in the far edge of the room... (PLACEHOLDER)
 @
-[[START-1-00]] 
+[[START-1-00]]
 [[START-2-00]] 
 
 
 :: START-1-00 {"position":"900,300","size":"100,100"}
 continue
+story
 Something happens...
 @
 [[START-1-01]] 
@@ -28,12 +29,13 @@ Something happens...
 
 :: START-1-01 {"position":"1050,250","size":"100,100"}
 continue
-
+story
 Something keeps happening...
 @
 
 
 :: START-2-00 {"position":"900,400","size":"100,100"}
 don't continue
+story
 Something else happens...
 @

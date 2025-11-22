@@ -1,30 +1,29 @@
 ﻿using BidirectionalMap;
+using ProjectXiantian;
 public enum SectionCatalogue
 {
     START = 0,
     TOWN = 14 //PLACEHOLDER
 }
-
-public class TweeNode // Node = Passage
-{
-    public Tuple<string, int, int> Address { get; set; } // addresses take the form SECTION-Stem-Leaf
-    public List<TweeNode>? NextNodes { get; set; } = new();
-    public TweeNode? PreviousNode { get; set; }
-    public string AccessionStatement { get; set; }
-    public string? Content { get; set; }
-
-    public List<Tuple<string, int, int>> ProtoAddresses { get; set; } = new();
-
-    public TweeNode(Tuple<string, int, int> Address, string AccessionStatement, string Content)
-    {
-        this.Address = Address;
-        this.AccessionStatement = AccessionStatement;
-        this.Content = Content;
-    }
+public enum NodeType {
+    NULL,
+    STORY,
+    LOCATION,
+    BATTLE
 }
-public class TweeTree
+public class TweeNode(Tuple<string, int, int> Address, string AccessionStatement, NodeType Type, string Content) // Node = Passage
 {
-    public TweeNode Root { get; set; }
+    public Tuple<string, int, int> Address { get; set; } = Address;
+    public List<Tuple<TweeNode, string, string>>? NextNodes { get; set; } = new();
+    public TweeNode? PreviousNode { get; set; }
+    public string AccessionStatement { get; set; } = AccessionStatement;
+    public string AccessionCondition {  get; set; }
+    public string? Content { get; set; } = Content;
+    public List<Tuple<string, int, int>> ProtoAddresses { get; set; } = new();
+    public NodeType Type { get; set; } = Type;
+}
+public class TweeTree(TweeNode root) {
+    public TweeNode Root { get; set; } = root;
     public TweeNode? Traverse(Tuple<string, int, int> target) //Depth-first recursive traversal algorithm, pretty standard fare I'd say
     {
         if (Root == null) {return null;}
@@ -36,20 +35,13 @@ public class TweeTree
         log.Add(current);
         if (current.Address.Item1 == target.Item1 && current.Address.Item2 == target.Item2 && current.Address.Item3 == target.Item3) { return current; }
         if (current.NextNodes != null) {
-            foreach (TweeNode node in current.NextNodes) {
-                TweeNode? found = RTraverse(node, target, log);
+            foreach (Tuple<TweeNode, string, string> node in current.NextNodes) {
+                TweeNode? found = RTraverse(node.Item1, target, log);
                 if (found != null) { return found; }
             }
         }
         return null;
     }
-
-    public TweeTree(TweeNode root)
-    {
-        Root = root;
-    }
-
-
 }
 public class TweeParser
 {
@@ -74,7 +66,7 @@ public class TweeParser
                                 break;
                             case "StoryData":
                                 break;
-                            case "START-0-00":
+                            case "Village House-0-00":
                                 string content = "";
                                 contentover = false;
                                 TweeNode i = null;
@@ -95,7 +87,7 @@ public class TweeParser
                                     }
                                     else {
                                         contentover = true;
-                                        i = new TweeNode(new Tuple<string, int, int>("START", 0, 0), null, content);
+                                        i = new TweeNode(new Tuple<string, int, int>("START", 0, 0), null, NodeType.STORY, content);
                                     }
                                 }
 
@@ -104,31 +96,53 @@ public class TweeParser
                                 content = "";
                                 int j = 0;
                                 string accession = null;
+                                string accessioncondition = null;
+                                NodeType type = NodeType.NULL;
                                 contentover = false;
                                 Tuple<string, int, int> Address = null;
                                 i = null;
                                 while (true) {
                                     string l = sr.ReadLine();
-                                    if (j == 0) {
+                                    // This triggers first
+                                    if (j == 0) { 
                                         accession = l;
                                     }
+                                    // This triggers second
+                                    else if (j == 1) { 
+                                        // if parse did not work, then l is not a valid type, so it must be an accession condition
+                                        if (Enum.TryParse(l, out type) == false) {
+                                            accessioncondition = l;
+                                            l = sr.ReadLine();
+                                            type = Enum.Parse<NodeType>(l);
+                                            j++;
+                                        }
+                                        // if parse did work, type would equal l, and so no else is needed here
+                                    }
+                                    // This triggers third
                                     else if (l != "@" && contentover == false) { content = content + l; }
+                                    // This triggers fifth
                                     else if (contentover == true) {
                                         if (l != "" && l != "@" && l != null) {
                                             string[] components = l.Substring(2, l.Length - 2).Split("-");
                                             i.ProtoAddresses.Add(new Tuple<string, int, int>(components[0], int.Parse(components[1]), int.Parse(components[2].Remove(2))));
                                         }
                                         else if (l == "@") { }
+                                        // This should always trigger last
                                         else {
                                             NodeSet.Add(i, Address);
                                             break;
                                         }
                                     }
-                                    else {
+                                    // This triggers fourth
+                                    else { 
                                         contentover = true;
                                         string[] NameComponents = name.Split("-");
                                         Address = new(NameComponents[0], int.Parse(NameComponents[1]), int.Parse(NameComponents[2]));
-                                        i = new TweeNode(Address, accession, content);
+                                        
+                                        i = new TweeNode(Address, accession, type, content);
+                                        if (accessioncondition != null) {
+                                            i.AccessionCondition = accessioncondition;
+                                        }
                                     }
                                     j++;
                                 }
@@ -143,7 +157,7 @@ public class TweeParser
             TweeTree tree = new(root);
             foreach (KeyValuePair<TweeNode, Tuple<string, int, int>> node in NodeSet) {
                 foreach (Tuple<string, int, int> Address in node.Key.ProtoAddresses) {
-                    node.Key.NextNodes.Add(NodeSet.Reverse[Address]);
+                    node.Key.NextNodes.Add(new(NodeSet.Reverse[Address], NodeSet.Reverse[Address].AccessionStatement, NodeSet.Reverse[Address].AccessionCondition));
                     NodeSet.Reverse[Address].PreviousNode = node.Key;
                 }
                 node.Key.PreviousNode = NodeSet.Reverse[node.Key.Address];

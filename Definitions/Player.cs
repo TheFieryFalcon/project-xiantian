@@ -1,0 +1,36 @@
+﻿using ProjectXiantian.Definitions;
+class Player {
+    public static int Strength = 0;
+    public static int Constitution = 0;
+    public static int Dexterity = 0;
+    public static int Intelligence = 0;
+    public static int Wisdom = 0;
+    public static int Soul = 0;
+    public static int Charisma = 0;
+    public static int Luck = 0;
+    public static int PowerLevel = 0;
+    public static CultivationRealm CultivationRealm = 0;
+    public static BodyRealm BodyRealm = 0;
+    public static ProfessionRealm ForgingRealm = 0;
+    public static ProfessionRealm TalismanRealm = 0;
+    public static ProfessionRealm FormationRealm = 0;
+    public static ProfessionRealm EnchanterRealm = 0;
+    public static AlchemyRealm AlchemyRealm = 0;
+    public static ComprehensionRealm ComprehensionRealm = 0;
+    public static Dictionary<string, SkillsRealm> Skills = new();
+    public static Dictionary<string, ArtRealm> Art = new();
+    public static List<Item> Inventory = new();
+    public static Dictionary<Slot, EquippableItem> EquippedItems = new();
+    public static int PAT = 0;
+    public static int PDF = 0;
+    public static int HP = 0;
+    public static int PRG = 0;
+    public static int PSP = 0;
+    public static int EVA = 0;
+    public static int CRT = 0;
+    public static int MAT = 0;
+    public static int MDF = 0;
+    public static int MRG = 0;
+    public static int MSP = 0;
+    public static int MCD = 0;
+}
