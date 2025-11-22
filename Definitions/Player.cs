@@ -21,7 +21,7 @@ class Player {
     public static Dictionary<string, ArtRealm> Art = new();
     public static List<Item> Inventory = new();
     public static Dictionary<Slot, EquippableItem> EquippedItems = new();
-    public static int PAT = 0;
+    public static int PAT = 0; // check notion for abbreviations
     public static int PDF = 0;
     public static int HP = 0;
     public static int PRG = 0;
