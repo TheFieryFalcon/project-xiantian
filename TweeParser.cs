@@ -11,7 +11,7 @@ public enum NodeType {
     LOCATION,
     BATTLE
 }
-public class TweeNode(Tuple<string, int, int> Address, string AccessionStatement, NodeType Type, string Content) // Node = Passage
+public class TweeNode(Tuple<string, int, int> Address, string AccessionStatement, NodeType Type, string Content, List<string> Properties) // Node = Passage
 {
     public Tuple<string, int, int> Address { get; set; } = Address;
     public List<Tuple<TweeNode, string, string>>? NextNodes { get; set; } = new();
@@ -21,6 +21,7 @@ public class TweeNode(Tuple<string, int, int> Address, string AccessionStatement
     public string? Content { get; set; } = Content;
     public List<Tuple<string, int, int>> ProtoAddresses { get; set; } = new();
     public NodeType Type { get; set; } = Type;
+    public List<string> Properties = Properties;
 }
 public class TweeTree(TweeNode root) {
     public TweeNode Root { get; set; } = root;
@@ -51,6 +52,7 @@ public class TweeParser
         BiMap<TweeNode, Tuple<string, int, int>> NodeSet = new();
         TweeNode root = null;
         bool contentover;
+        string startnode = null;
 		using (var sr = new StreamReader("ProjectXiantian.twee", System.Text.Encoding.UTF8))
 		{
 			while (true) {
@@ -65,88 +67,107 @@ public class TweeParser
                             case "StoryTitle":
                                 break;
                             case "StoryData":
-                                break;
-                            case "Village House-0-00":
-                                string content = "";
-                                contentover = false;
-                                TweeNode i = null;
                                 while (true) {
-                                    string l = sr.ReadLine();
-                                    if (l != "@" && contentover == false) { content = content + l; }
-                                    else if (contentover == true) {
-                                        if (l != "" && l != "@") {
-                                            string[] components = l.Substring(2, l.Count() - 2).Split("-");
-                                            i.ProtoAddresses.Add(new Tuple<string, int, int>(components[0], int.Parse(components[1]), int.Parse(components[2].Remove(2))));
-                                        }
-                                        else if (l == "@") { }
-                                        else {
-                                            NodeSet.Add(i, new Tuple<string, int, int>("START", 0, 0));
-                                            root = i;
-                                            break;
-                                        }
-                                    }
-                                    else {
-                                        contentover = true;
-                                        i = new TweeNode(new Tuple<string, int, int>("START", 0, 0), null, NodeType.STORY, content);
+                                    string l = sr.ReadLine().Trim();
+                                    if (l != null && l.Length > 8 && l[..8] == "\"start\":") {
+                                        startnode = l[10..^2];
+                                        break;
                                     }
                                 }
-
                                 break;
                             default:
-                                content = "";
-                                int j = 0;
-                                string accession = null;
-                                string accessioncondition = null;
-                                NodeType type = NodeType.NULL;
-                                contentover = false;
-                                Tuple<string, int, int> Address = null;
-                                i = null;
-                                while (true) {
-                                    string l = sr.ReadLine();
-                                    // This triggers first
-                                    if (j == 0) { 
-                                        accession = l;
-                                    }
-                                    // This triggers second
-                                    else if (j == 1) { 
-                                        // if parse did not work, then l is not a valid type, so it must be an accession condition
-                                        if (Enum.TryParse(l, out type) == false) {
-                                            accessioncondition = l;
-                                            l = sr.ReadLine();
-                                            type = Enum.Parse<NodeType>(l);
-                                            j++;
+                                if (name == startnode) {
+                                    string content = "";
+                                    contentover = false;
+                                    TweeNode i = null;
+                                    while (true) {
+                                        string l = sr.ReadLine();
+                                        if (l != "@" && contentover == false) { content = content + l; }
+                                        else if (contentover == true) {
+                                            if (l != "" && l != "@") {
+                                                string[] components = l.Substring(2, l.Count() - 2).Split("-");
+                                                i.ProtoAddresses.Add(new Tuple<string, int, int>(components[0], int.Parse(components[1]), int.Parse(components[2].Remove(2))));
+                                            }
+                                            else if (l == "@") { }
+                                            else {
+                                                NodeSet.Add(i, new Tuple<string, int, int>("START", 0, 0));
+                                                root = i;
+                                                break;
+                                            }
                                         }
-                                        // if parse did work, type would equal l, and so no else is needed here
-                                    }
-                                    // This triggers third
-                                    else if (l != "@" && contentover == false) { content = content + l; }
-                                    // This triggers fifth
-                                    else if (contentover == true) {
-                                        if (l != "" && l != "@" && l != null) {
-                                            string[] components = l.Substring(2, l.Length - 2).Split("-");
-                                            i.ProtoAddresses.Add(new Tuple<string, int, int>(components[0], int.Parse(components[1]), int.Parse(components[2].Remove(2))));
-                                        }
-                                        else if (l == "@") { }
-                                        // This should always trigger last
                                         else {
-                                            NodeSet.Add(i, Address);
-                                            break;
+                                            contentover = true;
+                                            i = new TweeNode(new Tuple<string, int, int>("START", 0, 0), null, NodeType.STORY, content, ["start", "saveable"]);
                                         }
                                     }
-                                    // This triggers fourth
-                                    else { 
-                                        contentover = true;
-                                        string[] NameComponents = name.Split("-");
-                                        Address = new(NameComponents[0], int.Parse(NameComponents[1]), int.Parse(NameComponents[2]));
-                                        
-                                        i = new TweeNode(Address, accession, type, content);
-                                        if (accessioncondition != null) {
-                                            i.AccessionCondition = accessioncondition;
-                                        }
-                                    }
-                                    j++;
+                                    break;
                                 }
-                                break;
+                                else {
+                                    string content = "";
+                                    int j = 0;
+                                    string accession = null;
+                                    string accessioncondition = null;
+                                    NodeType type = NodeType.NULL;
+                                    List<string> properties = new();
+                                    contentover = false;
+                                    Tuple<string, int, int> Address = null;
+                                    TweeNode i = null;
+                                    while (true) {
+                                        string l = sr.ReadLine();
+                                        // This triggers first
+                                        if (j == 0) {
+                                            accession = l;
+                                        }
+                                        // This triggers second
+                                        else if (j == 1) {
+                                            // if parse did not work, then l is not a valid type, so it must be an accession condition
+                                            // TODO: actually implement parsing of accession conditions (all we should need are comparisons)
+                                            if (Enum.TryParse(l.Split(", ")[0], out type) == false) {
+                                                accessioncondition = l;
+                                                l = sr.ReadLine();
+                                                type = Enum.Parse<NodeType>(l.Split(", ")[0]);
+                                                foreach (string Property in l.Split(", ")[1..]) {
+                                                    properties.Add(Property);
+                                                }
+                                                j++;
+                                            }
+                                            else {
+                                                type = Enum.Parse<NodeType>(l.Split(", ")[0]);
+                                                foreach (string Property in l.Split(", ")[1..]) {
+                                                    properties.Add(Property);
+                                                }
+                                            }
+                                        }
+                                        // This triggers third
+                                        else if (l != "@" && contentover == false) { content = content + "\n" + l; }
+                                        // This triggers fifth
+                                        else if (contentover == true) {
+                                            if (l != "" && l != "@" && l != null) {
+                                                string[] components = l[2..^2].Split("-");
+                                                i.ProtoAddresses.Add(new Tuple<string, int, int>(components[0], int.Parse(components[1]), int.Parse(components[2].Remove(2))));
+                                            }
+                                            else if (l == "@") { }
+                                            // This should always trigger last
+                                            else {
+                                                NodeSet.Add(i, Address);
+                                                break;
+                                            }
+                                        }
+                                        // This triggers fourth
+                                        else {
+                                            contentover = true;
+                                            string[] NameComponents = name.Split("-");
+                                            Address = new(NameComponents[0], int.Parse(NameComponents[1]), int.Parse(NameComponents[2]));
+
+                                            i = new TweeNode(Address, accession, type, content, properties);
+                                            if (accessioncondition != null) {
+                                                i.AccessionCondition = accessioncondition;
+                                            }
+                                        }
+                                        j++;
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }

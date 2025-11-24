@@ -7,21 +7,13 @@ ProjectXiantian
   "ifid": "DB8D0910-CB64-44D2-BCB5-CEB9827DED7A",
   "format": "Harlowe",
   "format-version": "3.3.9",
-  "start": "START-0-00",
+  "start": "Village_House-0-00",
   "zoom": 1
 }
 
-
-:: START-0-00 {"position":"700,350","size":"100,100"}
-You wake up in a dark, damp corner. Something rustles in the far edge of the room... (PLACEHOLDER)
-@
-[[START-1-00]]
-[[START-2-00]] 
-
-
 :: START-1-00 {"position":"900,300","size":"100,100"}
 continue
-story
+STORY
 Something happens...
 @
 [[START-1-01]] 
@@ -29,13 +21,20 @@ Something happens...
 
 :: START-1-01 {"position":"1050,250","size":"100,100"}
 continue
-story
+STORY, savable
 Something keeps happening...
 @
 
 
 :: START-2-00 {"position":"900,400","size":"100,100"}
-don't continue
-story
+choose/something else
+STORY
 Something else happens...
 @
+
+:: Village_House-0-00 {"position":"700,350","size":"100,100"}
+You wake up in a dark, damp corner. Something rustles in the far edge of the room... (PLACEHOLDER)
+@
+[[START-1-00]]
+[[START-2-00]] 
+
