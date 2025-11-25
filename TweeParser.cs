@@ -61,8 +61,8 @@ public class TweeParser
 					break;
 				}
 				if (line != "" && line.Length > 3) {
-                    if (line.Remove(3) == ":: ") {
-                        string name = line.Substring(3).Split(" ")[0];
+                    if (line[..3] == ":: ") {
+                        string name = line[3..].Split(" ")[0];
                         switch (name) {
                             case "StoryTitle":
                                 break;
@@ -82,11 +82,11 @@ public class TweeParser
                                     TweeNode i = null;
                                     while (true) {
                                         string l = sr.ReadLine();
-                                        if (l != "@" && contentover == false) { content = content + l; }
+                                        if (l != "@" && contentover == false) { content += l; }
                                         else if (contentover == true) {
                                             if (l != "" && l != "@") {
-                                                string[] components = l.Substring(2, l.Count() - 2).Split("-");
-                                                i.ProtoAddresses.Add(new Tuple<string, int, int>(components[0], int.Parse(components[1]), int.Parse(components[2].Remove(2))));
+                                                string[] components = l[2..].Split("-");
+                                                i.ProtoAddresses.Add(new Tuple<string, int, int>(components[0], int.Parse(components[1]), int.Parse(components[2][..2])));
                                             }
                                             else if (l == "@") { }
                                             else {
@@ -144,7 +144,7 @@ public class TweeParser
                                         else if (contentover == true) {
                                             if (l != "" && l != "@" && l != null) {
                                                 string[] components = l[2..^2].Split("-");
-                                                i.ProtoAddresses.Add(new Tuple<string, int, int>(components[0], int.Parse(components[1]), int.Parse(components[2].Remove(2))));
+                                                i.ProtoAddresses.Add(new Tuple<string, int, int>(components[0], int.Parse(components[1]), int.Parse(components[2][..2])));
                                             }
                                             else if (l == "@") { }
                                             // This should always trigger last

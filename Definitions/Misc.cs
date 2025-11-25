@@ -1,0 +1,8 @@
+﻿namespace ProjectXiantian.Definitions {
+    public class GameContext(TweeTree tree, TweeNode currentNode, Player player) {
+        public TweeNode CurrentNode { get; set; } = currentNode;
+        public TweeTree tree { get; set; } = tree;
+        public Player player { get; set; } = player;
+        public TweeNode PastNode { get; set; } = null;
+    }
+}

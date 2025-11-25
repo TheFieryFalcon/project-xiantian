@@ -1,5 +1,5 @@
 ﻿namespace ProjectXiantian.Definitions {
-    enum CultivationRealm {
+    public enum CultivationRealm {
         MORTAL,
         SPIRIT_EMBRYO,
         QI_GATHERING,
@@ -10,12 +10,12 @@
         SEVEN_TREASURES,
         EIGHT_TRIGRAMS
     }
-    enum BodyRealm {
+    public enum BodyRealm {
         MORTAL_BODY,
         WOOD_BODY,
         STEEL_BODY
     }
-    enum ProfessionRealm {
+    public enum ProfessionRealm {
         NOT_UNLOCKED,
         NOVICE,
         BEGINNER,
@@ -25,7 +25,7 @@
         MASTER,
         GRANDMASTER
     }
-    enum SkillsRealm {
+    public enum SkillsRealm {
         NOT_UNLOCKED,
         NOVICE,
         BEGINNER,
@@ -35,7 +35,7 @@
         MASTER,
         GRANDMASTER
     }
-    enum AlchemyRealm { // because alchemists are snobbish bastards
+    public enum AlchemyRealm { // because alchemists are snobbish bastards
         FIFTH_RANK,
         FOURTH_RANK,
         THIRD_RANK,
@@ -46,7 +46,7 @@
         GOLD_MASTER,
         GRANDMASTER
     }
-    enum ArtRealm {
+    public enum ArtRealm {
         NOT_UNLOCKED,
         STUDYING,
         MINOR_COMPLETION,
@@ -54,7 +54,7 @@
         COMPREHENSION,
         DIDACTIC
     }
-    enum ComprehensionRealm {
+    public enum ComprehensionRealm {
         NONE,
         CLUELESS,
         STUDYING,
@@ -72,7 +72,7 @@
         DAO_WITH_ONE,
         ALL_DAOS_WITH_ONE
     }
-    enum Stats {
+    public enum Stats {
         STRENGTH,
         CONSTITUTION,
         DEXTERITY,
@@ -82,7 +82,7 @@
         CHARISMA,
         LUCK
     }
-    enum Attributes {
+    public enum Attributes {
         PAT,
         PDF,
         PCD,
@@ -97,7 +97,7 @@
         MSP,
         CDG
     }
-    enum Rarity {
+    public enum Rarity {
         QUEST,
         MORTAL,
         LOW_RARE,
@@ -122,7 +122,7 @@
         MID_DAO,
         HIGH_DAO
     }
-    enum Quality {
+    public enum Quality {
         TRASH,
         USABLE,
         LOW_BASIC,
@@ -151,7 +151,7 @@
         HIGH_MAGNUM_OPUS,
         INCOMPREHENSIBLE
     }
-    enum Slot {
+    public enum Slot {
         HEAD,
         CHEST,
         ARMS,
@@ -162,13 +162,13 @@
         TALISMAN,
         RUNE
     }
-    enum Currency {
+    public enum Currency {
         COINS, // 8 bronze = 1 silver, 12 silver = 1 gold, 30 gold = 1 platinum; will be used until Qi Condensation realm or so
         SPIRIT_STONES, // factors of 1000, Fragment => Mortal => Earth => Sky => Celestial => Dao
         QI_STONES, // factional currency
         MARTIAL_STONES, // factional currency
     }
-    static class DefFunctions {
+    public static class DefFunctions {
         public static Quality ValueToQuality(int QualityVal) => QualityVal switch
         {
             < 10 => Quality.TRASH,
