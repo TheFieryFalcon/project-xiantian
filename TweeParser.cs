@@ -15,13 +15,14 @@ public class TweeNode(Tuple<string, int, int> Address, string AccessionStatement
 {
     public Tuple<string, int, int> Address { get; set; } = Address;
     public List<Tuple<TweeNode, string, string>>? NextNodes { get; set; } = new();
-    public TweeNode? PreviousNode { get; set; }
+    public List<TweeNode> PreviousNodes { get; set; } = new();
     public string AccessionStatement { get; set; } = AccessionStatement;
     public string AccessionCondition {  get; set; }
     public string? Content { get; set; } = Content;
     public List<Tuple<string, int, int>> ProtoAddresses { get; set; } = new();
     public NodeType Type { get; set; } = Type;
     public List<string> Properties = Properties;
+    public bool Accessed = false; 
 }
 public class TweeTree(TweeNode root) {
     public TweeNode Root { get; set; } = root;
@@ -178,10 +179,10 @@ public class TweeParser
             TweeTree tree = new(root);
             foreach (KeyValuePair<TweeNode, Tuple<string, int, int>> node in NodeSet) {
                 foreach (Tuple<string, int, int> Address in node.Key.ProtoAddresses) {
+                    TweeNode next = NodeSet.Reverse[Address];
                     node.Key.NextNodes.Add(new(NodeSet.Reverse[Address], NodeSet.Reverse[Address].AccessionStatement, NodeSet.Reverse[Address].AccessionCondition));
-                    NodeSet.Reverse[Address].PreviousNode = node.Key;
+                    next.PreviousNodes.Add(node.Key);
                 }
-                node.Key.PreviousNode = NodeSet.Reverse[node.Key.Address];
             }
 
 			return(tree);
