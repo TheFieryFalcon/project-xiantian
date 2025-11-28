@@ -17,7 +17,7 @@ namespace ProjectXiantian.Commands.General {
                 int i = 0;
                 foreach (TweeNode node in AccessedNodes) {
                     i++;
-                    AnsiConsole.WriteLine("(1) The node in " + node.Address.Item1); //TEST THIS TOMORROW
+                    AnsiConsole.WriteLine($"({i}) The node in " + node.Address.Item1); //TEST THIS TOMORROW
                 }
                 try { context.CurrentNode = AccessedNodes[AnsiConsole.Ask<int>("")]; } catch { Console.WriteLine("Invalid input!"); }
             }

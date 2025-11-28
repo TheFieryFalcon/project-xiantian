@@ -10,6 +10,10 @@ namespace ProjectXiantian {
             TweeNode CurrentNode = tree.Root;
             GameContext context = new(tree, CurrentNode, new());
             Verbs.Fill();
+            if (!Directory.Exists("./Saves"))
+            {
+                Directory.CreateDirectory("./Saves");
+            }
             DirectoryInfo di = new DirectoryInfo("./Saves");
             if (di.GetFiles().Length != 0) {
                 if (di.GetFiles().Length == 1 && di.GetFiles()[0].Length > 2) {
@@ -20,6 +24,7 @@ namespace ProjectXiantian {
                     AnsiConsole.WriteLine("Multiple save games detected. Which one would you like to load?");
                     string SaveExists(bool FileExists) => FileExists switch { false => "EMPTY", true => "EXISTS"};
                     int j = 0;
+
                     for (int i = 1; i < 6; i++) { 
                         AnsiConsole.Write($"Save {i}: {SaveExists(File.Exists($"./Saves/save{i}.sav"))}");
                         if (File.Exists($"./Saves/save{i}.sav")) { AnsiConsole.WriteLine($" Last Saved: {di.GetFiles()[j].LastWriteTime}"); j++;} else { AnsiConsole.WriteLine(); }
@@ -51,19 +56,24 @@ namespace ProjectXiantian {
             // 1: Input parser
             // 2: Handler for general verbs
             // 3: Redirect for other contexts
+
+            // EX: I travelled to 1, then 2, and I am now in 3; player was in realm 4, then 5, then 6
+            GameContext temp = new(context.tree, context.PastNode, context.PastPlayer); // Address is 2, player is in realm 5
+            if (context.PastContext is not null && context.PastContext.PastContext is not null) {
+                temp.PastContext = context.PastContext.PastContext; // Address is 1, player is in realm 4
+            }
+            context.PastContext = temp;
+            context.PastNode = context.CurrentNode; // Address is 3
+            context.PastPlayer = context.player; // Player is in realm 6
+            if (context.CurrentNode == null) {
+                AnsiConsole.WriteLine("Something has gone very wrong: Current node of context is null! Resetting context...");
+                context.CurrentNode = context.tree.Root;
+            }
             if (context.PastNode == null || context.CurrentNode != context.PastNode) {
                 AnsiConsole.Write(context.CurrentNode.Content);
                 context.CurrentNode.Accessed = true; // do not display, this does not actually persist, this is just for the back command
             }
             AnsiConsole.WriteLine();
-            // EX: I travelled to 1, then 2, and I am now in 3; player was in realm 4, then 5, then 6
-            GameContext temp = context.PastContext; // Address is 2, player is in realm 5
-            context.PastContext = new(context.tree, context.PastNode, context.PastPlayer); // Address is also 2, player is also in realm 5
-            if (temp != null) {
-                context.PastContext.PastContext = new(temp.tree, temp.PastNode, temp.PastPlayer); // Address is 1, player is in realm 4
-            }
-            context.PastNode = context.CurrentNode; // Address is 3
-            context.PastPlayer = context.player; // Player is in realm 6
             string input = AnsiConsole.Ask<string>("Make an action:");
             string verb = input.Split(" ")[0];
             char[] flags = [];

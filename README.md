@@ -1,1 +1,2 @@
-# game
+# Project Xiantian
+WIP
