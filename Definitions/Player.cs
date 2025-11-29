@@ -1,6 +1,8 @@
 ﻿using ProjectXiantian.Definitions;
 
 public class Player {
+    public string Name = "temp";
+    public string Title = "Supreme Venerable"; // temporary title
     public int Strength = 0;
     public int Constitution = 0;
     public int Dexterity = 0;
@@ -20,8 +22,8 @@ public class Player {
     public ComprehensionRealm ComprehensionRealm = 0;
     public Dictionary<string, SkillsRealm> Skills = new();
     public Dictionary<string, ArtRealm> Art = new();
-    public List<Item> Inventory = new();
-    public Dictionary<Slot, EquippableItem> EquippedItems = new();
+    public List<IItem> Inventory = new();
+    public Dictionary<Slot, Item> EquippedItems = new();
     public int PAT = 0; // check notion for abbreviations
     public int PDF = 0;
     public int HP = 0;

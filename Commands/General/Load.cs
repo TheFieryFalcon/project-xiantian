@@ -8,8 +8,6 @@ namespace ProjectXiantian.Commands.General {
                 try { number = int.Parse(parameters[0]); } catch { Console.WriteLine("Parameter of -n must be a number between 1 and 5!"); return context; }
             }
             Functions.Load(context, number);
-            AnsiConsole.Clear();
-            AnsiConsole.WriteLine($"Loaded save slot {parameters[0]} successfully!\n");
             return context;
         }
     }

@@ -2,14 +2,21 @@
 using ProjectXiantian.Definitions;
 using ProjectXiantian.Methods;
 using ProjectXiantian.Commands.General;
+using Baksteen.Extensions.DeepCopy;
+using ProjectXiantian.GameContent;
 namespace ProjectXiantian {
     class Entry {
         public static bool debug = true; //CHANGE BEFORE RELEASE
+        public static Stack<GameContext> History = new();
         public static void Main() {
+            AnsiConsole.WriteLine("Building tree...");
             TweeTree tree = TweeParser.Parse();
             TweeNode CurrentNode = tree.Root;
             GameContext context = new(tree, CurrentNode, new());
+            AnsiConsole.WriteLine("Loading verbs...");
             Verbs.Fill();
+            AnsiConsole.WriteLine("Loading items...");
+            context.ItemRecord = ItemMethods.Fill();
             if (!Directory.Exists("./Saves"))
             {
                 Directory.CreateDirectory("./Saves");
@@ -47,33 +54,30 @@ namespace ProjectXiantian {
                         
                     }
                 }
-                Loop(context);
+                Loop(context, 0, "");
             }
         }
 
-        public static void Loop(GameContext context) {
+        public static void Loop(GameContext context, int i, string PastCommand) {
             // THIS IS THE MAIN LOOP, it should contain:
             // 1: Input parser
             // 2: Handler for general verbs
             // 3: Redirect for other contexts
-
-            // EX: I travelled to 1, then 2, and I am now in 3; player was in realm 4, then 5, then 6
-            GameContext temp = new(context.tree, context.PastNode, context.PastPlayer); // Address is 2, player is in realm 5
-            if (context.PastContext is not null && context.PastContext.PastContext is not null) {
-                temp.PastContext = context.PastContext.PastContext; // Address is 1, player is in realm 4
-            }
-            context.PastContext = temp;
-            context.PastNode = context.CurrentNode; // Address is 3
-            context.PastPlayer = context.player; // Player is in realm 6
-            if (context.CurrentNode == null) {
-                AnsiConsole.WriteLine("Something has gone very wrong: Current node of context is null! Resetting context...");
+            
+            if (context.CurrentNode is null || context is null) {
+                AnsiConsole.WriteLine("Something has gone very wrong: Current node of context or context itself is null! Resetting context...");
                 context.CurrentNode = context.tree.Root;
             }
-            if (context.PastNode == null || context.CurrentNode != context.PastNode) {
+            if (i == 0 || (context.CurrentNode != context.PastNode && context.PastNode != null)) {
+                if (i != 0) {
+                    AnsiConsole.WriteLine();
+                }
                 AnsiConsole.Write(context.CurrentNode.Content);
-                context.CurrentNode.Accessed = true; // do not display, this does not actually persist, this is just for the back command
             }
+            context.PastNode = DeepCopyObjectExtensions.DeepCopy(context.CurrentNode);
+            GameContext temp = DeepCopyObjectExtensions.DeepCopy(context);
             AnsiConsole.WriteLine();
+
             string input = AnsiConsole.Ask<string>("Make an action:");
             string verb = input.Split(" ")[0];
             char[] flags = [];
@@ -96,6 +100,11 @@ namespace ProjectXiantian {
                 }
 
             }
+            // moved from above
+            if (!Verbs.StateUnchangingVerbs.Contains(verb)) {
+                History.Push(temp);
+            }
+
             switch (verb) {
                 case "debug":
                     debug = GeneralCommands.Debug(debug);
@@ -113,19 +122,31 @@ namespace ProjectXiantian {
                     GeneralCommands.Save(context, flags, parameters);
                     break;
                 case "load":
-                    context = GeneralCommands.Load(context, flags, parameters);
-                    break;
-                case "back":
-                    context = GeneralCommands.Back(context);
+                    GameContext lcontext = GeneralCommands.Load(context, flags, parameters);
+                    // reset everything
+                    if (lcontext != context) {
+                        AnsiConsole.Clear();
+                        AnsiConsole.WriteLine($"Loaded save slot {parameters[0]} successfully!\n");
+                        context = lcontext;
+                        i = 0;
+                        debug = false;
+                        History.Clear();
+                    }
                     break;
                 case "undo":
-                    context = GeneralCommands.Undo(context);
+                    // it's a lot easier for me to do this one here
+                    if (History.Count > 0) {
+                        context = DeepCopyObjectExtensions.DeepCopy(History.Pop());
+                    }
+                    else {
+                        AnsiConsole.WriteLine("Unable to undo any further!");
+                    }
                     break;
                 default:
                     AnsiConsole.WriteLine("Invalid command or invalid context of command; story commands can only be used in stories, battle commands only in battles, etc.");
                     break;
-                }
-            Loop(context);
+            }
+            Loop(context, i + 1, verb);
         }
     }
 }

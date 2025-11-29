@@ -1,23 +1,70 @@
 ﻿using ProjectXiantian.Definitions;
-public class Item(int Id, string Name, string Description, Rarity Rarity = Rarity.MORTAL, bool HasWeight = false, int Weight = 1, bool Sellable = false, int SellPrice = 0, Currency SellCurrency = Currency.COINS, int BuyPrice = 0, Currency BuyCurrency = Currency.COINS, bool Buyable = false) {
-    public int Id { get; set; } = Id;
-    public string Name { get; set; } = Name;
-    public string Description { get; set; } = Description;
-    public Rarity Rarity { get; set; } = Rarity;
-    public bool Sellable { get; set; } = Sellable;
-    public int SellPrice { get; set; } = SellPrice;
-    public Currency SellCurrency { get; set; } = SellCurrency;
-    public int BuyPrice { get; set; } = BuyPrice;
-    public Currency BuyCurrency { get; set; } = BuyCurrency;
-    public bool Buyable { get; set; } = Buyable;
-    public int Weight { get; set; } = Weight;
-    public bool HasWeight { get; set; } = HasWeight;
+public interface IItem {
+    string Id { get; set; }
+    string Name { get; set; }
+    string Description { get; set; }
+    Rarity Rarity { get; set; }
 }
-public class EquippableItem(int Id, string Name, string Description, List<Tuple<Attribute, int>> AttributeModifiers, Slot Slot, Quality Quality, Rarity Rarity = Rarity.MORTAL, bool HasWeight = false, int Weight = 1, bool Sellable = false, int SellPrice = 0, Currency SellCurrency = Currency.COINS, int BuyPrice = 0, Currency BuyCurrency = Currency.COINS, bool Buyable = false) : Item(Id, Name, Description, Rarity, HasWeight, Weight, Sellable, SellPrice, SellCurrency, BuyPrice, BuyCurrency, Buyable) { 
-    List<Tuple<Attribute, int>> AttributeModifiers { get; set; } = new();
-    public Slot? Slot { get; set; } = null;
-    public int QualityVal { get; set; }
+public class Buyable(int buyPrice, Currency currency) {
+    int BuyPrice { get; set; } = buyPrice;
+    Currency BuyCurrency { get; set; } = currency;
 }
-public class Material (int Id, string Name, string Description, int QualityVal, Rarity Rarity = Rarity.MORTAL, bool HasWeight = false, int Weight = 1, bool Sellable = false, int SellPrice = 0, Currency SellCurrency = Currency.COINS, int BuyPrice = 0, Currency BuyCurrency = Currency.COINS, bool Buyable = false) : Item(Id, Name, Description, Rarity, HasWeight, Weight, Sellable, SellPrice, SellCurrency, BuyPrice, BuyCurrency, Buyable) {
-    public int QualityVal { get; set; }
+public class Sellable(int sellPrice, Currency currency) {
+    int SellPrice { get; set; } = sellPrice;
+    Currency SellCurrency { get; set; } = currency;
+}
+public class Equippable(List<Tuple<PAttribute, int>> AttributeModifiers, Slot slot) {
+    List<Tuple<PAttribute, int>> AttributeModifiers { get; set; }
+    Slot? Slot { get; set; }
+    int QualityVal { get; set; }
+}
+public class Material {
+    int QualityVal { get; set; }
+}
+public class Item : IItem {
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public Rarity Rarity { get; set; }
+    // C stands for Component
+    public Equippable? CEquippable { get; set; }
+    public Sellable? CSellable {  get; set; }
+    public Buyable? CBuyable { get; set; }
+    public Material? CMaterial { get; set; }
+
+    public bool IsEquippable => CEquippable != null;
+    public bool IsSellable => CSellable != null;
+    public bool IsBuyable => CBuyable != null;
+    public bool IsMaterial => CMaterial != null;
+}
+
+public class ItemFactory {
+    public static Item CreateItem(string Name, string Description, Rarity Rarity = Rarity.MORTAL, bool IsMaterial = false, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE) {
+        Item result = new Item {
+            Name = Name,
+            Description = Description,
+            Rarity = Rarity
+        };
+        if (Rarity == Rarity.QUEST) {
+            result.Id = $"item.quest.{Name.ToLower().Replace(" ", "_")}";
+        }
+        else {
+            result.Id = $"item.{Name.ToLower().Replace(" ", "_")}";
+        }
+        if (IsBuyable == true) {
+            result.CBuyable = new Buyable(BuyPrice, Currency);
+        }
+        if (IsSellable == true) {
+            result.CSellable = new Sellable(SellPrice, Currency);
+        }
+        if (IsMaterial == true) {
+            result.CMaterial = new Material();
+        }
+        return result;
+    }
+    public static Item CreateGear(string Name, string Description, List<Tuple<PAttribute, int>> AttributeModifiers, Slot Slot, Rarity Rarity = Rarity.MORTAL, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE) {
+        Item result = CreateItem(Name, Description, Rarity, false, IsBuyable, IsSellable, BuyPrice, SellPrice, Currency);
+        result.CEquippable = new Equippable(AttributeModifiers, Slot);
+        return result;
+    }
 }

@@ -1,5 +1,5 @@
 ﻿using BidirectionalMap;
-using ProjectXiantian;
+using ProjectXiantian.Definitions;
 public enum SectionCatalogue
 {
     START = 0,
@@ -54,7 +54,7 @@ public class TweeParser
         TweeNode root = null;
         bool contentover;
         string startnode = null;
-		using (var sr = new StreamReader("ProjectXiantian.twee", System.Text.Encoding.UTF8))
+		using (var sr = new StreamReader(Misc.StoryTreePath, System.Text.Encoding.UTF8))
 		{
 			while (true) {
 				string line = sr.ReadLine();

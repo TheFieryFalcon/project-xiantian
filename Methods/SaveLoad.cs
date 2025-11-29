@@ -13,19 +13,22 @@ namespace ProjectXiantian.Methods {
                 return null;
             }
             else {
-                using (StreamReader sr = new($"./Saves/save{filenum}.sav")) {
-                    using (JsonDocument savejson = JsonDocument.Parse(sr.ReadToEnd())) {
-                        save = savejson.RootElement.Deserialize<Save>();
+                try {
+                    using (StreamReader sr = new($"./Saves/save{filenum}.sav")) {
+                        using (JsonDocument savejson = JsonDocument.Parse(sr.ReadToEnd())) {
+                            save = savejson.RootElement.Deserialize<Save>();
+                        }
+                        if (Misc.SaveFormatId == save.FormatId) {
+                            context.player = save.player;
+                            context.CurrentNode = context.tree.Traverse(save.CurrentNodeAddress);
+                        }
+                        else {
+                            // handle all update logic here
+                        }
+                        return context;
                     }
-                    if (Misc.SaveFormatId == save.FormatId) {
-                        context.player = save.player;
-                        context.CurrentNode = context.tree.Traverse(save.CurrentNodeAddress);
-                    }
-                    else {
-                        // handle all update logic here
-                    }
-                    return context;
                 }
+                catch { AnsiConsole.WriteLine("No such file found!"); return context; }
             }
         }
         public static string Save(GameContext context, int filenum = 1) {

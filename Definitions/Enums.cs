@@ -82,10 +82,9 @@
         CHARISMA,
         LUCK
     }
-    public enum Attributes {
+    public enum PAttribute { // P is required to avoid ambiguous reference
         PAT,
         PDF,
-        PCD,
         HP,
         PRG,
         PSP,
@@ -98,6 +97,7 @@
         CDG
     }
     public enum Rarity {
+        NONE,
         QUEST,
         MORTAL,
         LOW_RARE,
@@ -120,9 +120,11 @@
         HIGH_FAIRY,
         LOW_DAO,
         MID_DAO,
-        HIGH_DAO
+        HIGH_DAO,
+        INCOMPREHENSIBLE
     }
     public enum Quality {
+        NONE,
         TRASH,
         USABLE,
         LOW_BASIC,
@@ -152,6 +154,8 @@
         INCOMPREHENSIBLE
     }
     public enum Slot {
+        NONE,
+        HAND,
         HEAD,
         CHEST,
         ARMS,
@@ -163,6 +167,7 @@
         RUNE
     }
     public enum Currency {
+        NONE,
         COINS, // 8 bronze = 1 silver, 12 silver = 1 gold, 30 gold = 1 platinum; will be used until Qi Condensation realm or so
         SPIRIT_STONES, // factors of 1000, Fragment => Mortal => Earth => Sky => Celestial => Dao
         QI_STONES, // factional currency
