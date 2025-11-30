@@ -1,5 +1,5 @@
 ﻿using BidirectionalMap;
-namespace ProjectXiantian.GameContent {
+namespace ProjectXiantian.Content {
     class Verbs {
         public static BiMap<string, int> TransitiveVerbs = new();
         public static List<string> StateUnchangingVerbs = new();

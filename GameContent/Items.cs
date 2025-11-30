@@ -1,7 +1,7 @@
 ﻿using ProjectXiantian.Definitions;
 using System.Reflection;
 
-namespace ProjectXiantian.GameContent {
+namespace ProjectXiantian.Content {
     internal class Items {
         static readonly PAttribute PAT = PAttribute.PAT; // physical attack
         static readonly PAttribute PDF = PAttribute.PDF; // physical defense

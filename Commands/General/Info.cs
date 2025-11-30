@@ -1,5 +1,5 @@
 ﻿using ProjectXiantian.Definitions;
-using ProjectXiantian.GameContent;
+using ProjectXiantian.Content;
 namespace ProjectXiantian.Commands.General {
     partial class GeneralCommands {
         public static void Info(GameContext context, char[] flags, string[] parameters, bool debug) {
@@ -24,12 +24,19 @@ namespace ProjectXiantian.Commands.General {
             }
             else {
                 if (flags.Contains(char.Parse("s"))) {
-                    if (parameters.Length > 0 && parameters[0] == "item") {
+                    if (parameters.Length > 0 && (parameters[0] == "item" || parameters[0].StartsWith("item"))) {
                         Item item = ItemMethods.GetItem(context.ItemRecord, string.Join(" ", parameters[1..]));
                         if (item is not null) {
                             AnsiConsole.WriteLine(item.Name);
-                            AnsiConsole.MarkupLine($"[italic]{item.Id}");
-                            // TODO: TEST AND IMPLEMENT (I am too tired and I have been coding for five straight hours)
+                            AnsiConsole.MarkupLine($"[italic]{item.Id}[/]");
+                            AnsiConsole.WriteLine($"Rarity: {item.Rarity.ToString()}");
+                            if (item.IsEquippable == true) {
+                                AnsiConsole.WriteLine($"Slot: {item.CEquippable.Slot}");
+                                AnsiConsole.WriteLine($"Effects: ");
+
+                            }
+                            AnsiConsole.WriteLine("Obtainment Methods:");
+
                         }
                     }
                 }

@@ -1,4 +1,6 @@
-﻿namespace ProjectXiantian.Definitions {
+﻿using System.Linq.Expressions;
+using System.Reflection;
+namespace ProjectXiantian.Definitions {
     public class GameContext(TweeTree tree, TweeNode currentNode, Player player) {
         public TweeNode CurrentNode { get; set; } = currentNode;
         public TweeTree tree { get; set; } = tree;
@@ -8,9 +10,7 @@
     }
     public class Misc {
         public static int SaveFormatId = 1; //UPDATE EVERY FORMAT CHANGE
-        public static string StoryTreePath = "./GameContent/ProjectXiantian.twee";
-        public static void InvalidArgumentException() {
-            AnsiConsole.WriteLine("Flag or verb must take (an) argument(s)!");
-        }
+        public static string StoryTreePath = "./Content/ProjectXiantian.twee";
+
     }
 }

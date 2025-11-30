@@ -14,10 +14,10 @@ public enum NodeType {
 public class TweeNode(Tuple<string, int, int> Address, string AccessionStatement, NodeType Type, string Content, List<string> Properties) // Node = Passage
 {
     public Tuple<string, int, int> Address { get; set; } = Address;
-    public List<Tuple<TweeNode, string, string>>? NextNodes { get; set; } = new();
+    public List<Tuple<TweeNode, string, ConditionalStatement>>? NextNodes { get; set; } = new();
     public List<TweeNode> PreviousNodes { get; set; } = new();
     public string AccessionStatement { get; set; } = AccessionStatement;
-    public string AccessionCondition {  get; set; }
+    public ConditionalStatement AccessionCondition {  get; set; }
     public string? Content { get; set; } = Content;
     public List<Tuple<string, int, int>> ProtoAddresses { get; set; } = new();
     public NodeType Type { get; set; } = Type;
@@ -37,7 +37,7 @@ public class TweeTree(TweeNode root) {
         log.Add(current);
         if (current.Address.Item1 == target.Item1 && current.Address.Item2 == target.Item2 && current.Address.Item3 == target.Item3) { return current; }
         if (current.NextNodes != null) {
-            foreach (Tuple<TweeNode, string, string> node in current.NextNodes) {
+            foreach (Tuple<TweeNode, string, ConditionalStatement> node in current.NextNodes) {
                 TweeNode? found = RTraverse(node.Item1, target, log);
                 if (found != null) { return found; }
             }
@@ -162,7 +162,8 @@ public class TweeParser
 
                                             i = new TweeNode(Address, accession, type, content, properties);
                                             if (accessioncondition != null) {
-                                                i.AccessionCondition = accessioncondition;
+                                                string[] parts = accessioncondition.Split(" ");
+                                                i.AccessionCondition = new(parts[0], parts[1], parts[2]);
                                             }
                                         }
                                         j++;

@@ -3,7 +3,7 @@ using ProjectXiantian.Definitions;
 using ProjectXiantian.Methods;
 using ProjectXiantian.Commands.General;
 using Baksteen.Extensions.DeepCopy;
-using ProjectXiantian.GameContent;
+using ProjectXiantian.Content;
 namespace ProjectXiantian {
     class Entry {
         public static bool debug = true; //CHANGE BEFORE RELEASE
