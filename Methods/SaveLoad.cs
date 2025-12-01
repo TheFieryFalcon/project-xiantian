@@ -31,15 +31,15 @@ namespace ProjectXiantian.Methods {
                 catch { AnsiConsole.WriteLine("No such file found!"); return context; }
             }
         }
-        public static string Save(GameContext context, int filenum = 1) {
+        public static void Save(GameContext context, int filenum = 1) {
             if (filenum > 5) {
-                return ("Parameter of -n must be a number between 1 and 5!");
+                Exceptions.E1();
             }
             else {
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 var save = new Save { CurrentNodeAddress = context.CurrentNode.Address, player = context.player };
                 File.WriteAllText($"./Saves/save{filenum}.sav", JsonSerializer.Serialize(save, options));
-                return null;
+                return;
             }
         }
     }

@@ -36,4 +36,5 @@ public class Player {
     public int MRG = 0;
     public int MSP = 0;
     public int MCD = 0;
+    public List<string> BuffsActive = new(); // temporary
 }

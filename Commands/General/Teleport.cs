@@ -11,15 +11,15 @@ namespace ProjectXiantian.Commands.General {
                         return context;
                     }
                     else {
-                        AnsiConsole.WriteLine("Stem and leaf numbers of address must be integers!");
+                        Exceptions.E1();
                     }
                 }
                 else {
-                    AnsiConsole.WriteLine("Stem and leaf numbers of address must be integers!");
+                    Exceptions.E1();
                 }
             }
             else {
-                AnsiConsole.WriteLine("Debug mode is not enabled!");
+                Exceptions.E3();
             }
             return context;
         }

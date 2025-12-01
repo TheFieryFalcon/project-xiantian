@@ -27,7 +27,7 @@
         public string Name { get; set; }
         public string Description { get; set; }
         public Rarity Rarity { get; set; }
-        public Effect Effect { get; set; }
+        public Effect[] Effects { get; set; }
         // C stands for Component
         public Equippable? CEquippable { get; set; }
         public Sellable? CSellable { get; set; }
@@ -38,10 +38,13 @@
         public bool IsSellable => CSellable != null;
         public bool IsBuyable => CBuyable != null;
         public bool IsMaterial => CMaterial != null;
+        protected virtual void OnItemConsumed(EventArgs e) {
+
+        }
     }
 
     public class ItemFactory {
-        public static Item CreateItem(string Name, string Description, Rarity Rarity = Rarity.MORTAL, bool IsMaterial = false, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE, bool Consumable = false) {
+        public static Item CreateItem(string Name, string Description, Rarity Rarity = Rarity.MORTAL, bool IsMaterial = false, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE, bool Consumable = false, Effect[] effects = null) {
             Item result = new Item
             {
                 Name = Name,
@@ -62,8 +65,8 @@
             }
             return result;
         }
-        public static Item CreateGear(string Name, string Description, List<Tuple<PAttribute, int>> AttributeModifiers, Slot Slot, Rarity Rarity = Rarity.MORTAL, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE, Effect effect = null) {
-            Item result = CreateItem(Name, Description, Rarity, false, IsBuyable, IsSellable, BuyPrice, SellPrice, Currency);
+        public static Item CreateGear(string Name, string Description, List<Tuple<PAttribute, int>> AttributeModifiers, Slot Slot, Rarity Rarity = Rarity.MORTAL, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE, Effect[] effects = null) {
+            Item result = CreateItem(Name, Description, Rarity, false, IsBuyable, IsSellable, BuyPrice, SellPrice, Currency, false, effects);
             result.CEquippable = new Equippable(AttributeModifiers, Slot);
             return result;
         }
@@ -74,8 +77,10 @@
         }
     }
 
-    public class Effect(ConditionalStatement conditional, EventHandler handler = null) {
-        public ConditionalStatement Condition {  get; set; } = conditional;
+    public class Effect(ConditionalStatement a, ConditionalStatement c, EventHandler handler = null) {
+        public ConditionalStatement Antecedent { get; set; } = a;
         public EventHandler Event = handler;
+        public ConditionalStatement Consequent { get; set; } = c;
+        public bool IsActive => handler == null;
     }
 }

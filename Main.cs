@@ -2,8 +2,10 @@
 using ProjectXiantian.Definitions;
 using ProjectXiantian.Methods;
 using ProjectXiantian.Commands.General;
+using ProjectXiantian.Commands.ContextParsers;
 using Baksteen.Extensions.DeepCopy;
 using ProjectXiantian.Content;
+
 namespace ProjectXiantian {
     class Entry {
         public static bool debug = true; //CHANGE BEFORE RELEASE
@@ -65,7 +67,7 @@ namespace ProjectXiantian {
             // 3: Redirect for other contexts
             
             if (context.CurrentNode is null || context is null) {
-                AnsiConsole.WriteLine("Something has gone very wrong: Current node of context or context itself is null! Resetting context...");
+                Exceptions.E2();
                 context.CurrentNode = context.tree.Root;
             }
             if (i == 0 || (context.CurrentNode != context.PastNode && context.PastNode != null)) {
@@ -104,7 +106,7 @@ namespace ProjectXiantian {
             if (!Verbs.StateUnchangingVerbs.Contains(verb)) {
                 History.Push(temp);
             }
-
+            
             switch (verb) {
                 case "debug":
                     debug = GeneralCommands.Debug(debug);
@@ -143,7 +145,21 @@ namespace ProjectXiantian {
                     }
                     break;
                 default:
-                    AnsiConsole.WriteLine("Invalid command or invalid context of command; story commands can only be used in stories, battle commands only in battles, etc.");
+                    switch (context.CurrentNode.Type) {
+                        case NodeType.STORY:
+
+                            break;
+                        case NodeType.LOCATION:
+                            context = Location.ParseLocation(context, verb, vparameters, flags, parameters);
+                            break;
+                        case NodeType.BATTLE:
+
+                            break;
+                        default:
+                            Exceptions.E4();
+                            break;
+                    }
+                    
                     break;
             }
             Loop(context, i + 1, verb);
