@@ -1,4 +1,6 @@
-﻿namespace ProjectXiantian.Definitions {
+﻿using ProjectXiantian.GameContent.Lang;
+
+namespace ProjectXiantian.Definitions {
     public interface IItem {
         string Id { get; set; }
         string Name { get; set; }
@@ -26,6 +28,8 @@
         public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public string Type { get; set; }
+        public bool Consumable { get; set; }
         public Rarity Rarity { get; set; }
         public Effect[] Effects { get; set; }
         // C stands for Component
@@ -44,43 +48,67 @@
     }
 
     public class ItemFactory {
-        public static Item CreateItem(string Name, string Description, Rarity Rarity = Rarity.MORTAL, bool IsMaterial = false, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE, bool Consumable = false, Effect[] effects = null) {
-            Item result = new Item
-            {
-                Name = Name,
-                Description = Description,
-                Rarity = Rarity
-            };
+        public static Item CreateItem(string id, Rarity Rarity = Rarity.MORTAL, bool IsMaterial = false, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE, bool Consumable = false, Effect[] effects = null, string Type = "Item") {
+            Item result = new Item{ Rarity = Rarity};
             if (Rarity == Rarity.QUEST) {
-                result.Id = $"item.quest.{Name.ToLower().Replace(" ", "_")}";
+                result.Id = $"item.quest.{id.ToLower().Replace(" ", "_")}";
             }
             else {
-                result.Id = $"item.{Name.ToLower().Replace(" ", "_")}";
+                result.Id = $"item.{id.ToLower().Replace(" ", "_")}";
             }
+            result.Type = Type;
+            result.Name = km.lang[km.GetKey(result.Id) + ".description"];
+            result.Description = km.lang[km.GetKey(result.Id) + ".description"];
+            result.Consumable = Consumable;
             if (IsBuyable == true) {
                 result.CBuyable = new Buyable(BuyPrice, Currency);
             }
             if (IsSellable == true) {
                 result.CSellable = new Sellable(SellPrice, Currency);
             }
+            if (Consumable == true) {
+                result.Type = string.Concat("Consumable " + Type);
+            }
             return result;
         }
-        public static Item CreateGear(string Name, string Description, List<Tuple<PAttribute, int>> AttributeModifiers, Slot Slot, Rarity Rarity = Rarity.MORTAL, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE, Effect[] effects = null) {
-            Item result = CreateItem(Name, Description, Rarity, false, IsBuyable, IsSellable, BuyPrice, SellPrice, Currency, false, effects);
+        public static Item CreateGear(string id, List<Tuple<PAttribute, int>> AttributeModifiers, Slot Slot, Rarity Rarity = Rarity.MORTAL, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE, Effect[] effects = null) {
+            Item result = CreateItem(id, Rarity, false, IsBuyable, IsSellable, BuyPrice, SellPrice, Currency, false, effects, "Equipment");
             result.CEquippable = new Equippable(AttributeModifiers, Slot);
             return result;
         }
-        public static Item CreateMaterial(string Name, string Description, int LQualityVal, int HQualityVal, Rarity Rarity = Rarity.MORTAL, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE) {
-            Item result = CreateItem(Name, Description, Rarity, false, IsBuyable, IsSellable, BuyPrice, SellPrice, Currency);
+        public static Item CreateMaterial(string id, int LQualityVal, int HQualityVal, Rarity Rarity = Rarity.MORTAL, bool IsBuyable = false, bool IsSellable = false, int BuyPrice = 0, int SellPrice = 0, Currency Currency = Currency.NONE) {
+            Item result = CreateItem(id, Rarity, false, IsBuyable, IsSellable, BuyPrice, SellPrice, Currency, Type:"Material");
             result.CMaterial = new Material(LQualityVal, HQualityVal);
             return result;
         }
     }
 
-    public class Effect(ConditionalStatement a, ConditionalStatement c, EventHandler handler = null) {
+    public class Effect(ConditionalStatement a, ConditionalStatement c, EventHandler handler = null, string name = null) {
+        public string Name { get; set; } = name;
         public ConditionalStatement Antecedent { get; set; } = a;
         public EventHandler Event = handler;
         public ConditionalStatement Consequent { get; set; } = c;
         public bool IsActive => handler == null;
+        override public string ToString() {
+            string result = IsActive switch { true => "Active Effect", false => "Passive Effect" };
+            if (Name != null) {
+                result += Name;
+            }
+            result += ":";
+            if (handler != null) {
+                result += "\nOn ";
+                result += Misc.SplitCamelCase(handler.Method.Name) + ","; // change this tomorrow
+            }
+            result += $"If \n {Antecedent.ToString()},";
+            result += $"\n {Consequent.ToString()}";
+            // Active Effect:
+            // On Attack,
+            // If Strength > 10 and Defense > 10,
+            // HP increases by 5
+            // Passive Effect:
+            // If Strength > 10 and Defense > 10,
+            // Regeneration decreases by 2
+            return result;
+        }
     }
 }

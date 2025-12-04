@@ -8,8 +8,10 @@
     }
     public class Misc {
         public static int SaveFormatId = 1; //UPDATE EVERY FORMAT CHANGE
-        public static string StoryTreePath = "./Content/ProjectXiantian.twee";
-
+        public static string StoryTreePath = "./GameContent/lang/en_US/ProjectXiantian.twee";
+        public static string SplitCamelCase(string input) { // thanks stack overflow
+            return System.Text.RegularExpressions.Regex.Replace(input, "([A-Z])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
+        }
     }
     public class Exceptions {
         public static void E1() {
@@ -19,10 +21,10 @@
             AnsiConsole.WriteLine("Something was null that shouldn't be. Report this to the developers! Error 2");
         }
         public static void E3() {
-            AnsiConsole.WriteLine("Debug mode is not enabled!");
+            AnsiConsole.WriteLine("Debug mode is not enabled! Error 3");
         }
         public static void E4() {
-            AnsiConsole.WriteLine("Invalid command or invalid context of command; story commands can only be used in stories, battle commands only in battles, etc.");
+            AnsiConsole.WriteLine("Invalid command or invalid context of command; story commands can only be used in stories, battle commands only in battles, etc. Error 4");
         }
     }
 }

@@ -5,12 +5,15 @@ using ProjectXiantian.Commands.General;
 using ProjectXiantian.Commands.ContextParsers;
 using Baksteen.Extensions.DeepCopy;
 using ProjectXiantian.Content;
+using ProjectXiantian.GameContent.Lang;
 
 namespace ProjectXiantian {
     class Entry {
         public static bool debug = true; //CHANGE BEFORE RELEASE
         public static Stack<GameContext> History = new();
         public static void Main() {
+            AnsiConsole.WriteLine("Loading localization..."); // implement some kind of actual language checker before release
+            km.lang = km.LoadLangFile("en_US");
             AnsiConsole.WriteLine("Building tree...");
             TweeTree tree = TweeParser.Parse();
             TweeNode CurrentNode = tree.Root;
@@ -85,23 +88,36 @@ namespace ProjectXiantian {
             char[] flags = [];
             string[] parameters = [];
             string[] vparameters = [];
-            if (input.Split(" ").Length > 1 && !Verbs.TransitiveVerbs.Forward.ContainsKey(verb)) { 
-                flags = input.Split(" ")[1][1..].ToCharArray();
-                if (input.Split(" ").Length > 2) {
-                    parameters = input.Split(" ")[2..];
+            List<string> ptemp = new();
+            bool flag = false;
+            foreach (string param in input.Split(" ")[1..]) {
+                // first
+                if (param.Length == 0) {
+                    continue;
                 }
-            }
-            else if (Verbs.TransitiveVerbs.Forward.ContainsKey(verb)) {
-                int transitivity = Verbs.TransitiveVerbs.Forward.GetValueOrDefault(verb);
-                vparameters = input.Split(" ")[1..(transitivity+1)];
-                if (input.Split(" ").Length > transitivity + 1) {
-                    flags = input.Split(" ")[transitivity + 1][1..].ToCharArray();
-                    if (input.Split(" ").Length > transitivity + 2) {
-                        parameters = input.Split(" ")[(transitivity+2)..];
+                // third, resets temp list
+                else if (param.StartsWith(char.Parse("-"))) {
+                    if (flag) {
+                        Console.WriteLine("Command cannot have two flag blocks!");
+                        Loop(context, i + 1, "invalid");
                     }
+                    flag = true;
+                    ptemp = new();
+                    flags = param.ToCharArray()[1..];
                 }
-
+                // second, fourth
+                else {
+                    ptemp.Add(param);
+                }
             }
+            // fifth
+            if (flag) {
+                parameters = ptemp.ToArray();
+            }
+            else {
+                vparameters = ptemp.ToArray();
+            }
+            
             // moved from above
             if (!Verbs.StateUnchangingVerbs.Contains(verb)) {
                 History.Push(temp);

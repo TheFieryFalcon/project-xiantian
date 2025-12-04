@@ -16,9 +16,9 @@ namespace ProjectXiantian.Content {
         static readonly PAttribute MSP = PAttribute.MSP; // cast speed
         static readonly PAttribute CDG = PAttribute.CDG; // crit damage
        
-        public static Item TestItem { get; set; } = ItemFactory.CreateItem("Test Item", "This item is for testing only.", Rarity.INCOMPREHENSIBLE, false, true, true, 1000000, 1000000, Currency.SPIRIT_STONES);
-        public static Item TestSword { get; set; } = ItemFactory.CreateGear("Test Sword", "Legendarily sharp sword of developing.", [new(PAT, 1000)], Slot.HAND);
-        public static Item TestBuff { get; set; } = ItemFactory.CreateItem("Apple", "A nice crisp snack.", Rarity.MORTAL, Consumable: true, 
+        public static Item TestItem { get; set; } = ItemFactory.CreateItem("Test Item", Rarity.INCOMPREHENSIBLE, false, true, true, 1000000, 1000000, Currency.SPIRIT_STONES);
+        public static Item TestSword { get; set; } = ItemFactory.CreateGear("Test Sword", [new(PAT, 1000)], Slot.HAND);
+        public static Item TestBuff { get; set; } = ItemFactory.CreateItem("Apple", Rarity.MORTAL, Consumable: true, 
             effects: [new(new(new ConditionalStatement("context.player.Strength", ">", "i10"), "&&", new ConditionalStatement("context.player.Defense", ">", "i10")), new("context.player.BuffsActive[0]", "=", "sApple"))]);
 
         

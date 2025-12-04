@@ -23,23 +23,42 @@ namespace ProjectXiantian.Commands.General {
                 AnsiConsole.WriteLine("You can get more info by running with flags!");
             }
             else {
-                if (flags.Contains(char.Parse("s"))) {
-                    if (parameters.Length > 0 && (parameters[0] == "item" || parameters[0].StartsWith("item"))) {
-                        Item item = ItemMethods.GetItem(context.ItemRecord, string.Join(" ", parameters[1..]));
-                        if (item is not null) {
-                            AnsiConsole.WriteLine(item.Name);
-                            AnsiConsole.MarkupLine($"[italic]{item.Id}[/]");
-                            AnsiConsole.WriteLine($"Rarity: {item.Rarity.ToString()}");
-                            if (item.IsEquippable == true) {
-                                AnsiConsole.WriteLine($"Slot: {item.CEquippable.Slot}");
-                                AnsiConsole.WriteLine($"Effects: ");
-
-                            }
-                            AnsiConsole.WriteLine("Obtainment Methods:");
-
+                if (flags.Contains(char.Parse("i"))) {
+                    Item item = ItemMethods.GetItem(context.ItemRecord, string.Join(" ", parameters));
+                    if (item is not null) {
+                        AnsiConsole.WriteLine(item.Name);
+                        AnsiConsole.MarkupLine($"[italic]{item.Id}[/]");
+                        AnsiConsole.WriteLine($"{item.Type}");
+                        AnsiConsole.WriteLine($"Rarity: {item.Rarity.ToString()}");
+                        if (item.IsEquippable == true) {
+                            AnsiConsole.WriteLine($"Slot: {item.CEquippable.Slot}");
                         }
+                        else if (item.IsMaterial == true) {
+                            AnsiConsole.WriteLine($"Quality: {item.CMaterial.LQualityVal} {item.CMaterial.HQualityVal}");
+                        }
+                        if (item.Effects is not null) {
+                            foreach (Effect effect in item.Effects) {
+                                AnsiConsole.WriteLine();
+                                AnsiConsole.WriteLine(effect.ToString());
+                            }
+                        }
+                        if (item.IsBuyable == true) {
+                            AnsiConsole.WriteLine($"Market Price: {item.CBuyable.BuyPrice} {item.CBuyable.BuyCurrency}");
+                        }
+                        else if (item.IsSellable == true) {
+                            AnsiConsole.WriteLine($"Market Price: {item.CSellable.SellPrice} {item.CSellable.SellCurrency}");
+                        }
+                        AnsiConsole.WriteLine("Obtainment Methods:");
+
+                    }
+                    else {
+                        AnsiConsole.WriteLine("No such item found!");
                     }
                 }
+                else {
+                    AnsiConsole.WriteLine("Invalid flags!");
+                }
+                
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Baksteen.Extensions.DeepCopy;
+using ProjectXiantian.GameContent.Lang;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -23,9 +24,25 @@ namespace ProjectXiantian.Definitions {
             this.op = op;
             this.cr = cr;
         }
+        public override string ToString() {
+            if (cl is not null) {
+                return ($"{cl.ToString()} \n{op switch {"&&" => "and", "||" => "or"}} {cr.ToString()}"); 
+            }
+            string localizedl = km.lang[km.GetKey(l)];
+            string localizedr = null;
+            if (r != null && r.StartsWith("b") || r.StartsWith("i") || r.StartsWith("s")) {
+                localizedr = r[1..];
+            }
+            else {
+                localizedr = km.lang[km.GetKey(r)];
+            }
+            return ($"{localizedl} {op switch { "==" => "=", "+=" => "increases by", "-=" => "decreases by", _ => op }} {localizedr}");
+        }
         public static Tuple<int, Expression?> Prevaluate(GameContext context, ConditionalStatement Statement) {
             Expression l = null;
+            string lpath = null;
             Expression r = null; // I really don't get why I need this but I do
+            string rpath = null;
             Expression econtext = Expression.Constant(context);
             if (Statement is null) {
                 return new(-1, null);
@@ -70,6 +87,7 @@ namespace ProjectXiantian.Definitions {
                     // creates an expression chain to the end property or field
                     foreach (string propname in parsedr[1..]) {
                         propName = propname; // I really don't get c# sometimes
+                        rpath = string.Concat(rpath, ".", propname); // for localization
                         try { prop = root.GetProperty(propName); } catch { return new(2, null); }
                         root = prop.PropertyType;
                         eroot = Expression.PropertyOrField(eroot, propName);
@@ -84,7 +102,8 @@ namespace ProjectXiantian.Definitions {
                 string propNamel = null;
                 Expression erootl = econtext;
                 foreach (string propname in parsedl[1..]) {
-                    propNamel = propname; 
+                    propNamel = propname;
+                    lpath = string.Concat(lpath, ".", propname); // for localization
                     try { propl = rootl.GetProperty(propNamel); } catch { return new(2, null); }
                     rootl = propl.PropertyType;
                     erootl = Expression.PropertyOrField(erootl, propNamel);
@@ -100,6 +119,8 @@ namespace ProjectXiantian.Definitions {
                 "==" => Expression.Equal(l, r),
                 "=" => Expression.Assign(l, r),
                 "=/=" => Expression.NotEqual(l, r),
+                "+=" => Expression.AddAssign(l, r),
+                "-=" => Expression.SubtractAssign(l, r),
                 "&&" => Expression.And(l, r),
                 "||" => Expression.Or(l, r),
                 _ => null

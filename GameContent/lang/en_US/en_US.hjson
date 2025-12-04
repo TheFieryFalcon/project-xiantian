@@ -1,0 +1,10 @@
+{
+	"context.player.strength": "Strength"
+	"context.player.defense": "Defense"
+	"item.test_sword.name": "Test Sword"
+	"item.test_sword.description": "A sword for the dev to test"
+	"item.test_item.name": "Test Item"
+	"item.test_item.description": "Just a test item for the dev"
+	"item.apple.name": "Apple"
+	"item.apple.description": "An apple."
+}
