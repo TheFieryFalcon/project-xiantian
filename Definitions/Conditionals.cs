@@ -26,7 +26,7 @@ namespace ProjectXiantian.Definitions {
         }
         public override string ToString() {
             if (cl is not null) {
-                return ($"{cl.ToString()} \n{op switch {"&&" => "and", "||" => "or"}} {cr.ToString()}"); 
+                return ($"{cl.ToString()} {op switch {"&&" => "and", "||" => "or"}} {cr.ToString()}"); 
             }
             string localizedl = km.lang[km.GetKey(l)];
             string localizedr = null;

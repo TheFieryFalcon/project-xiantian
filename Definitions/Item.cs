@@ -1,4 +1,5 @@
-﻿using ProjectXiantian.GameContent.Lang;
+﻿using ProjectXiantian.Content;
+using ProjectXiantian.GameContent.Lang;
 
 namespace ProjectXiantian.Definitions {
     public interface IItem {
@@ -42,6 +43,32 @@ namespace ProjectXiantian.Definitions {
         public bool IsSellable => CSellable != null;
         public bool IsBuyable => CBuyable != null;
         public bool IsMaterial => CMaterial != null;
+        public void DisplayItem() {
+            AnsiConsole.WriteLine(Name);
+            AnsiConsole.WriteLine(Description);
+            AnsiConsole.MarkupLine($"[italic]{Id}[/]");
+            AnsiConsole.WriteLine($"{Type}");
+            AnsiConsole.WriteLine($"Rarity: {Rarity.ToString()}");
+            if (IsEquippable == true) {
+                AnsiConsole.WriteLine($"Slot: {CEquippable.Slot}");
+            }
+            else if (IsMaterial == true) {
+                AnsiConsole.WriteLine($"Quality: {CMaterial.LQualityVal} {CMaterial.HQualityVal}");
+            }
+            if (Effects is not null) {
+                foreach (Effect effect in Effects) {
+                    AnsiConsole.WriteLine();
+                    AnsiConsole.WriteLine(effect.ToString());
+                }
+            }
+            if (IsBuyable == true) {
+                AnsiConsole.WriteLine($"Market Price: {CBuyable.BuyPrice} {CBuyable.BuyCurrency}");
+            }
+            else if (IsSellable == true) {
+                AnsiConsole.WriteLine($"Market Price: {CSellable.SellPrice} {CSellable.SellCurrency}");
+            }
+            AnsiConsole.WriteLine("Obtainment Methods:");
+        }
         protected virtual void OnItemConsumed(EventArgs e) {
 
         }
@@ -57,7 +84,7 @@ namespace ProjectXiantian.Definitions {
                 result.Id = $"item.{id.ToLower().Replace(" ", "_")}";
             }
             result.Type = Type;
-            result.Name = km.lang[km.GetKey(result.Id) + ".description"];
+            result.Name = km.lang[km.GetKey(result.Id) + ".name"];
             result.Description = km.lang[km.GetKey(result.Id) + ".description"];
             result.Consumable = Consumable;
             if (IsBuyable == true) {
@@ -68,6 +95,9 @@ namespace ProjectXiantian.Definitions {
             }
             if (Consumable == true) {
                 result.Type = string.Concat("Consumable " + Type);
+            }
+            if (effects != null) {
+                result.Effects = effects;
             }
             return result;
         }
@@ -99,8 +129,8 @@ namespace ProjectXiantian.Definitions {
                 result += "\nOn ";
                 result += Misc.SplitCamelCase(handler.Method.Name) + ","; // change this tomorrow
             }
-            result += $"If \n {Antecedent.ToString()},";
-            result += $"\n {Consequent.ToString()}";
+            result += $"\nIf {Antecedent.ToString()},";
+            result += $"\n{Consequent.ToString()}";
             // Active Effect:
             // On Attack,
             // If Strength > 10 and Defense > 10,

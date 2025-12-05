@@ -4,7 +4,7 @@ using ProjectXiantian.Definitions;
 namespace ProjectXiantian.Commands.Location {
     partial class LocationCommands {
         public static GameContext Use(GameContext context, string[] vparameters, char[] flags, string[] parameters) {
-            Item item = ItemMethods.GetItem(context.ItemRecord, vparameters[0]);
+            Item item = ItemMethods.GetItem(ItemMethods.ItemRecord, vparameters[0]);
             if (item is null) {
                 AnsiConsole.WriteLine("No such item found! You can use item ID or name in any command which needs an item. 1004");
             }

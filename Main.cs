@@ -21,7 +21,7 @@ namespace ProjectXiantian {
             AnsiConsole.WriteLine("Loading verbs...");
             Verbs.Fill();
             AnsiConsole.WriteLine("Loading items...");
-            context.ItemRecord = ItemMethods.Fill();
+            ItemMethods.ItemRecord = ItemMethods.Fill();
             if (!Directory.Exists("./Saves"))
             {
                 Directory.CreateDirectory("./Saves");
@@ -159,6 +159,9 @@ namespace ProjectXiantian {
                     else {
                         AnsiConsole.WriteLine("Unable to undo any further!");
                     }
+                    break;
+                case "get":
+                    context = GeneralCommands.Get(context, vparameters, flags, parameters, debug);
                     break;
                 default:
                     switch (context.CurrentNode.Type) {
