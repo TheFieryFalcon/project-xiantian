@@ -48,9 +48,9 @@ namespace ProjectXiantian.Definitions {
             AnsiConsole.WriteLine(Description);
             AnsiConsole.MarkupLine($"[italic]{Id}[/]");
             AnsiConsole.WriteLine($"{Type}");
-            AnsiConsole.WriteLine($"Rarity: {Rarity.ToString()}");
+            AnsiConsole.WriteLine($"Rarity: {km.lang[Rarity.ToString()]}");
             if (IsEquippable == true) {
-                AnsiConsole.WriteLine($"Slot: {CEquippable.Slot}");
+                AnsiConsole.WriteLine($"Slot: {km.lang[CEquippable.Slot.ToString()]}");
             }
             else if (IsMaterial == true) {
                 AnsiConsole.WriteLine($"Quality: {CMaterial.LQualityVal} {CMaterial.HQualityVal}");
@@ -62,10 +62,10 @@ namespace ProjectXiantian.Definitions {
                 }
             }
             if (IsBuyable == true) {
-                AnsiConsole.WriteLine($"Market Price: {CBuyable.BuyPrice} {CBuyable.BuyCurrency}");
+                AnsiConsole.WriteLine($"Market Price: {CBuyable.BuyPrice} {km.lang[CBuyable.BuyCurrency.ToString()]}");
             }
             else if (IsSellable == true) {
-                AnsiConsole.WriteLine($"Market Price: {CSellable.SellPrice} {CSellable.SellCurrency}");
+                AnsiConsole.WriteLine($"Market Price: {CSellable.SellPrice} {km.lang[CSellable.SellCurrency.ToString()]}");
             }
             AnsiConsole.WriteLine("Obtainment Methods:");
         }

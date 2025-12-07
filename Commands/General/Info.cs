@@ -1,12 +1,13 @@
 ﻿using ProjectXiantian.Definitions;
 using ProjectXiantian.Content;
+using ProjectXiantian.GameContent.Lang;
 namespace ProjectXiantian.Commands.General {
     partial class GeneralCommands {
         public static void Info(GameContext context, char[] flags, string[] parameters, bool debug) {
             Player p = context.player; //just a shorthand
             if (flags.Length == 0) {
                 AnsiConsole.WriteLine($"{p.Name}    {p.Title}");
-                AnsiConsole.WriteLine($"Realm: {p.CultivationRealm.ToString()}");
+                AnsiConsole.WriteLine($"Realm: {km.lang[p.CultivationRealm.ToString()]}");
                 AnsiConsole.WriteLine($"Power Lvl: {p.PowerLevel}");
                 AnsiConsole.WriteLine($"Active Quest: Name");
                 AnsiConsole.WriteLine($"Objective: Task");

@@ -154,6 +154,24 @@
 	"quality.high_magnum_opus": "High Magnum Opus",
 	"quality.incomprehensible": "Incomprehensible"
 
+	"slot.none": "None (THIS SHOULD NOT APPEAR IN GAME)",
+	"slot.hand": "Hand",
+	"slot.head": "Head",
+	"slot.chest": "Chest",
+	"slot.arms": "Arms",
+	"slot.legs": "Legs",
+	"slot.boots": "Boots",
+	"slot.ring": "Ring",
+	"slot.necklace": "Necklace",
+	"slot.talisman": "Talisman",
+	"slot.rune": "Rune",
+
+	"currency.none": "None",
+	"currency.coins": "Coins",
+	"currency.spirit_stones": "Spirit Stones",
+	"currency.qi_stones": "Qi Stones",
+	"currency.martial_stones": "Martial Stones"
+
 	"item.test_sword.name": "Test Sword"
 	"item.test_sword.description": "A sword for the dev to test"
 	"item.test_item.name": "Test Item"
