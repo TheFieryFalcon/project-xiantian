@@ -19,7 +19,7 @@ namespace ProjectXiantian.Definitions {
     public class Equippable(List<Tuple<PAttribute, int>> AttributeModifiers, Slot slot) {
         public List<Tuple<PAttribute, int>> AttributeModifiers { get; set; }
         public Slot Slot { get; set; }
-        public int QualityVal { get; set; }
+        public Quality quality { get; set; }
     }
     public class Material(int LQualityVal, int HQualityVal) {
         public int LQualityVal { get; set; } = LQualityVal;
@@ -43,17 +43,38 @@ namespace ProjectXiantian.Definitions {
         public bool IsSellable => CSellable != null;
         public bool IsBuyable => CBuyable != null;
         public bool IsMaterial => CMaterial != null;
-        public void DisplayItem() {
+        public void DisplayItem(bool debug) {
             AnsiConsole.WriteLine(Name);
             AnsiConsole.WriteLine(Description);
-            AnsiConsole.MarkupLine($"[italic]{Id}[/]");
+            if (debug) {
+                AnsiConsole.MarkupLine($"[italic]{Id}[/]");
+            }
             AnsiConsole.WriteLine($"{Type}");
-            AnsiConsole.WriteLine($"Rarity: {km.lang[Rarity.ToString()]}");
+            AnsiConsole.WriteLine();
+            AnsiConsole.WriteLine($"Rarity: {km.lang[Rarity.ToLocString()]}");
             if (IsEquippable == true) {
-                AnsiConsole.WriteLine($"Slot: {km.lang[CEquippable.Slot.ToString()]}");
+                AnsiConsole.WriteLine($"Slot: {km.lang[CEquippable.Slot.ToLocString()]}");
+                AnsiConsole.WriteLine("Stats:");
+                int ilevel = 0;
+                if (CEquippable != null) {
+                    foreach (Tuple<PAttribute, int> item in CEquippable.AttributeModifiers) {
+                        AnsiConsole.WriteLine($"{Math.Sign(item.Item2) switch { 0 => "-", 1 => "+" }}{item.Item2} {km.lang[item.Item1.ToLocString()]}");
+                        ilevel += item.Item2;
+                    }
+                    AnsiConsole.WriteLine($"Item Level: {ilevel}");
+                }
+                else {
+                    AnsiConsole.WriteLine("This item is useless!");
+                }
             }
             else if (IsMaterial == true) {
                 AnsiConsole.WriteLine($"Quality: {CMaterial.LQualityVal} {CMaterial.HQualityVal}");
+            }
+            if (IsBuyable == true) {
+                AnsiConsole.WriteLine($"Market Price: {CBuyable.BuyPrice} {km.lang[CBuyable.BuyCurrency.ToLocString()]}");
+            }
+            else if (IsSellable == true) {
+                AnsiConsole.WriteLine($"Market Price: {CSellable.SellPrice} {km.lang[CSellable.SellCurrency.ToLocString()]}");
             }
             if (Effects is not null) {
                 foreach (Effect effect in Effects) {
@@ -61,13 +82,11 @@ namespace ProjectXiantian.Definitions {
                     AnsiConsole.WriteLine(effect.ToString());
                 }
             }
-            if (IsBuyable == true) {
-                AnsiConsole.WriteLine($"Market Price: {CBuyable.BuyPrice} {km.lang[CBuyable.BuyCurrency.ToString()]}");
-            }
-            else if (IsSellable == true) {
-                AnsiConsole.WriteLine($"Market Price: {CSellable.SellPrice} {km.lang[CSellable.SellCurrency.ToString()]}");
-            }
+            AnsiConsole.WriteLine();
             AnsiConsole.WriteLine("Obtainment Methods:");
+            if (IsBuyable == true) {
+                AnsiConsole.WriteLine("Buying from NPCs");
+            }
         }
         protected virtual void OnItemConsumed(EventArgs e) {
 
@@ -112,12 +131,12 @@ namespace ProjectXiantian.Definitions {
             return result;
         }
     }
-
-    public class Effect(ConditionalStatement a, ConditionalStatement c, EventHandler handler = null, string name = null) {
+    // consequent cannot **actually** be null, it's just that antecedent should go before consequent
+    public class Effect(ConditionalStatement antecedent = null, ConditionalStatement consequent = null, EventHandler handler = null, string name = null) {
         public string Name { get; set; } = name;
-        public ConditionalStatement Antecedent { get; set; } = a;
+        public ConditionalStatement Antecedent { get; set; } = antecedent;
         public EventHandler Event = handler;
-        public ConditionalStatement Consequent { get; set; } = c;
+        public ConditionalStatement Consequent { get; set; } = consequent;
         public bool IsActive => handler == null;
         override public string ToString() {
             string result = IsActive switch { true => "Active Effect", false => "Passive Effect" };
@@ -127,7 +146,7 @@ namespace ProjectXiantian.Definitions {
             result += ":";
             if (handler != null) {
                 result += "\nOn ";
-                result += Misc.SplitCamelCase(handler.Method.Name) + ","; // change this tomorrow
+                result += Misc.SplitCamelCase(handler.Method.Name) + ","; // probably localize handlers instead because holy jank
             }
             result += $"\nIf {Antecedent.ToString()},";
             result += $"\n{Consequent.ToString()}";

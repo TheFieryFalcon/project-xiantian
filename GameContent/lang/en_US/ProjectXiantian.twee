@@ -11,30 +11,38 @@ ProjectXiantian
   "zoom": 1
 }
 
-:: START-1-00 {"position":"900,300","size":"100,100"}
-continue
-STORY
-Something happens...
-@
-[[START-1-01]] 
-
-
-:: START-1-01 {"position":"1050,250","size":"100,100"}
-continue
-STORY, saveable
-Something keeps happening...
-@
-
-
-:: START-2-00 {"position":"900,400","size":"100,100"}
-choose/something else
-STORY
-Something else happens...
-@
 
 :: Village_House-0-00 {"position":"700,350","size":"100,100"}
 You wake up in a dark, damp corner. Something rustles in the far edge of the room... (PLACEHOLDER)
 @
-[[START-1-00]]
-[[START-2-00]] 
+[[Village_House-1-00]]
+[[Village_House-2-00]]
 
+
+:: Village_House-1-00 {"position":"900,300","size":"100,100"}
+continue
+STORY
+Something happens...
+@
+[[Village_House-1-01]]
+
+
+:: Village_House-1-01 {"position":"1050,250","size":"100,100"}
+continue
+STORY, saveable
+Something keeps happening...
+@
+[[Village_House-1-02]]
+
+
+:: Village_House-1-02 {"position":"1200,250","size":"100,100"}
+enter
+LOCATION, saveable
+You find yourself in a plush room with a brightly burning campfire. Something feels comforting... Perhaps I should eat an apple here?
+@
+
+:: Village_House-2-00 {"position":"900,400","size":"100,100"}
+choose/something else
+STORY
+Something else happens...
+@

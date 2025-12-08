@@ -166,7 +166,7 @@ namespace ProjectXiantian {
                 default:
                     switch (context.CurrentNode.Type) {
                         case NodeType.STORY:
-
+                            Exceptions.E4();
                             break;
                         case NodeType.LOCATION:
                             context = Location.ParseLocation(context, verb, vparameters, flags, parameters);

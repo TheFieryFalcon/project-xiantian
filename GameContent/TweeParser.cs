@@ -1,10 +1,6 @@
 ﻿using BidirectionalMap;
 using ProjectXiantian.Definitions;
-public enum SectionCatalogue
-{
-    START = 0,
-    TOWN = 14 //PLACEHOLDER
-}
+using System.Text;
 public enum NodeType {
     NULL,
     STORY,
@@ -82,7 +78,7 @@ public class TweeParser
                                     contentover = false;
                                     TweeNode i = null;
                                     while (true) {
-                                        string l = sr.ReadLine();
+                                        string l = sr.ReadLine().Trim(' ');
                                         if (l != "@" && contentover == false) { content += l; }
                                         else if (contentover == true) {
                                             if (l != "" && l != "@") {
@@ -115,6 +111,10 @@ public class TweeParser
                                     TweeNode i = null;
                                     while (true) {
                                         string l = sr.ReadLine();
+                                        Console.WriteLine(l);
+                                        if (l != null) {
+                                            l = l.Trim(' ');
+                                        }
                                         // This triggers first
                                         if (j == 0) {
                                             accession = l;
@@ -143,7 +143,7 @@ public class TweeParser
                                         else if (l != "@" && contentover == false) { content = content + "\n" + l; }
                                         // This triggers fifth
                                         else if (contentover == true) {
-                                            if (l != "" && l != "@" && l != null) {
+                                            if (l != "" && l != "@" && l != null && l != "\n" && l != "\r") {
                                                 string[] components = l[2..^2].Split("-");
                                                 i.ProtoAddresses.Add(new Tuple<string, int, int>(components[0], int.Parse(components[1]), int.Parse(components[2][..2])));
                                             }

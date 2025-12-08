@@ -1,8 +1,20 @@
 ﻿using ProjectXiantian.Definitions;
 using ProjectXiantian.Content;
 using ProjectXiantian.GameContent.Lang;
+using System.Text;
 namespace ProjectXiantian.Commands.General {
     partial class GeneralCommands {
+        public static Range? RangeGetter(System.Collections.IList record, int page = 1 ) {
+            if (record.Count < (page - 1) * 20) {
+                return null;
+            }
+            if (record.Count < page * 20) {
+                return ((page - 1) * 20)..;
+            }
+            else {
+                return ((page - 1) * 20)..(page * 20);
+            }
+        }
         public static void Info(GameContext context, char[] flags, string[] parameters, bool debug) {
             Player p = context.player; //just a shorthand
             if (flags.Length == 0) {
@@ -29,13 +41,24 @@ namespace ProjectXiantian.Commands.General {
                         Exceptions.E1();
                         return;
                     }
-                    else if (parameters.Length == 1) {
+                    int page = 1;
+                    if (parameters.Length == 1 || int.TryParse(parameters[1], out page)) {
                         switch (parameters[0]) {
                             case "item":
-                                for (int i = 0; i < 50; i++) {
-                                    // TODO: implement later
+                                Range? selpage = RangeGetter(ItemMethods.ItemRecord, page);
+                                Table table = new Table();
+                                table.AddColumns("Name", "Description", "Rarity", "Is Material?", "Equippable?", "Has Effects?");
+                                if (selpage == null) {
+                                    Console.WriteLine("Search was out of bounds! 52a");
+                                    return;
                                 }
-                                break;
+                                foreach (Tuple<string, string, Item> record in ItemMethods.ItemRecord[(Range)selpage]) {
+                                    Item s = record.Item3; // just shorthand
+                                    table.AddRow(s.Name, s.Description, km.lang[s.Rarity.ToLocString()], s.IsMaterial switch { false => "No", true => "Yes"}, s.IsEquippable switch { false => "No", true => "Yes" }, s.Effects switch { null => "No", _ => "Yes" });
+                                }
+                                AnsiConsole.Write(table);
+                                AnsiConsole.Write(new Align(new Text($"Page 1 / {Math.Ceiling((decimal)(ItemMethods.ItemRecord.Count / 20))}"), HorizontalAlignment.Center));
+                                return;
                             default:
                                 Exceptions.E1();
                                 return;
@@ -43,12 +66,13 @@ namespace ProjectXiantian.Commands.General {
                     }
                     Item item = ItemMethods.GetItem(ItemMethods.ItemRecord, string.Join(" ", parameters[1..]));
                     if (item is not null) {
-                        item.DisplayItem();
+                        item.DisplayItem(debug);
                     }
                     else {
                         AnsiConsole.WriteLine("No such item found! 50b");
                     }
                 }
+                // This does not use RangeGetter so it has different errors
                 else if (flags.Contains(char.Parse("e"))) {
                     Table table = new();
                     table.AddColumns("Name:", "Description:", "#");

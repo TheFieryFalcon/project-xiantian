@@ -19,9 +19,7 @@ namespace ProjectXiantian.Content {
         public static Item TestItem { get; set; } = ItemFactory.CreateItem("Test Item", Rarity.INCOMPREHENSIBLE, false, true, true, 1000000, 1000000, Currency.SPIRIT_STONES);
         public static Item TestSword { get; set; } = ItemFactory.CreateGear("Test Sword", [new(PAT, 1000)], Slot.HAND);
         public static Item TestBuff { get; set; } = ItemFactory.CreateItem("Apple", Rarity.MORTAL, Consumable: true, 
-            effects: [new(new(new ConditionalStatement("context.player.Strength", ">", "i10"), "&&", new ConditionalStatement("context.player.Defense", ">", "i10")), new("context.player.HP", "+=", "i5"))]);
-
-        
+            effects: [new(new(new ConditionalStatement("context.player.Strength", ">", "i10"), "&&", new ConditionalStatement("context.player.Constitution", ">", "i10")), new("context.player.HP", "+=", "i5"))]);
     }
     public static class ItemMethods {
         public static List<Tuple<string, string, Item>> ItemRecord = null;

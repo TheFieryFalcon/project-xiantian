@@ -1,6 +1,6 @@
 {
 	"context.player.strength": "Strength"
-	"context.player.constitution": "Defense"
+	"context.player.constitution": "Constitution"
 	"context.player.dexterity": "Dexterity"
 	"context.player.intelligence": "Intelligence"
 	"context.player.wisdom": "Wisdom"

@@ -12,6 +12,12 @@
             return System.Text.RegularExpressions.Regex.Replace(input, "([A-Z])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
         }
     }
+    public static class EnumToLoc {
+        public static string ToLocString(this Enum val) {
+            // Includes ToLowers for convenience
+            return $"{val.GetType().Name.ToLower()}.{val.ToString().ToLower()}";
+        }
+    }
     public class Exceptions {
         public static void E1() {
             AnsiConsole.WriteLine("Invalid parameters passed to verb. Please refer to help for more information. 01");
